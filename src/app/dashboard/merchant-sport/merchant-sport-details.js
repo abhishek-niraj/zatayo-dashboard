@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { ImageBaseUrl } from '@/app/utils/apiUrl';
+import Image from 'next/image';
+import InputField from '@/app/components/InputField'; // Adjust the import path
+import DropdownField from '@/app/components/DropDownComponent'; // Adjust the import path
+
 export default function MerchantSportDetail() {
   const router = useRouter();
   const selectedSport = useSelector(
@@ -18,6 +22,7 @@ export default function MerchantSportDetail() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [sportType, setSportType] = useState('');
+  const [equipmentList, setEquipmentList] = useState([]);
 
   // Populate state when selectedSport changes
   useEffect(() => {
@@ -25,11 +30,12 @@ export default function MerchantSportDetail() {
       setSportName(selectedSport.sportName || '');
       setLocationName(selectedSport.locationName || '');
       setSelectedState(selectedSport.sportState || '');
-      setCity(selectedSport.city || '');
+      setCity(selectedSport.sportCity || '');
       setDescription(selectedSport.description || '');
       setLatitude(selectedSport.latitude || '');
       setLongitude(selectedSport.longitude || '');
       setSportType(selectedSport.sportType || '');
+      setEquipmentList(selectedSport.equipmentData || []); // Corrected here
     }
   }, [selectedSport]);
 
@@ -40,142 +46,137 @@ export default function MerchantSportDetail() {
     }
   }, [selectedSport, router]);
 
+  // Dropdown options for state
+  const stateOptions = [
+    { value: 'california', label: 'California' },
+    { value: 'texas', label: 'Texas' },
+    { value: 'florida', label: 'Florida' },
+    { value: 'new-york', label: 'New York' },
+    { value: 'illinois', label: 'Illinois' },
+  ];
+
   return (
     <div className='overflow-y-auto h-full pt-9 px-4'>
       <div className='grid grid-flow-row md:grid-flow-col'>
         <div>
           <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             {/* Sport Name */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Sport Name
-              </label>
-              <input
-                type='text'
-                placeholder='Sport Name'
-                value={sportName}
-                onChange={(e) => setSportName(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
+            <InputField
+              label='Sport Name'
+              type='text'
+              placeholder='Sport Name'
+              value={sportName}
+              onChange={(e) => setSportName(e.target.value)}
+            />
 
             {/* Location/Area */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Location/Area
-              </label>
-              <input
-                type='text'
-                placeholder='Location / Area'
-                value={locationName}
-                onChange={(e) => setLocationName(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
+            <InputField
+              label='Location/Area'
+              type='text'
+              placeholder='Location / Area'
+              value={locationName}
+              onChange={(e) => setLocationName(e.target.value)}
+            />
 
             {/* State Dropdown */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                State
-              </label>
-              <select
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-              >
-                <option value='' disabled>
-                  Select a State
-                </option>
-                <option value='california'>California</option>
-                <option value='texas'>Texas</option>
-                <option value='florida'>Florida</option>
-                <option value='new-york'>New York</option>
-                <option value='illinois'>Illinois</option>
-              </select>
-            </div>
+            {/* <DropdownField
+              label='State'
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              options={stateOptions}
+            /> */}
+
+            <InputField
+              label='State'
+              type='text'
+              placeholder='State'
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+            />
 
             {/* City */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                City
-              </label>
-              <input
-                type='text'
-                placeholder='City Name'
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Description
-              </label>
-              <input
-                type='text'
-                placeholder='Description'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
+            <InputField
+              label='City'
+              type='text'
+              placeholder='City Name'
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
 
             {/* Latitude */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Latitude
-              </label>
-              <input
-                type='text'
-                placeholder='Latitude'
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
+            <InputField
+              label='Latitude'
+              type='text'
+              placeholder='Latitude'
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+            />
 
             {/* Longitude */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Longitude
-              </label>
-              <input
-                type='text'
-                placeholder='Longitude'
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
+            <InputField
+              label='Longitude'
+              type='text'
+              placeholder='Longitude'
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+            />
 
             {/* Sport Type */}
-            <div>
-              <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
-                Sport Type
-              </label>
-              <input
-                type='text'
-                placeholder='Sport Type'
-                value={sportType}
-                onChange={(e) => setSportType(e.target.value)}
-                className='w-full p-2 border rounded bg-gray-50 outline-none'
-              />
-            </div>
+            <InputField
+              label='Sport Type'
+              type='text'
+              placeholder='Sport Type'
+              value={sportType}
+              onChange={(e) => setSportType(e.target.value)}
+            />
+
+            {/* Description */}
+
+            <InputField
+              label='Description'
+              placeholder='Enter description'
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              isTextArea={true} // Enables textarea
+            />
           </div>
         </div>
-        <div>Equipment list</div>
+        <div className='px-5'>
+          <h2 className='text-lg font-semibold '>Equipment List</h2>
+          {equipmentList.length > 0 ? (
+            <div>
+              {equipmentList.map((item, index) => (
+                <div key={index} className='py-2'>
+                  <div className='text-lg font-semibold'> {item.equipment}</div>
+                  <div>{item.description}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No equipment available.</p>
+          )}
+        </div>
       </div>
       {/* Images */}
       <div>
-        <figure className='max-w-1'>
-          <img
-            className='h-2 max-w-full rounded-lg'
-            src={`${ImageBaseUrl}${selectedSport.images[0]['image']}`}
-            alt='sport-image'
-          ></img>
-        </figure>
+        <h2 className='text-lg font-semibold mb-2'>Images</h2>
+        {selectedSport?.images?.length > 0 ? (
+          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+            {selectedSport.images.map((imageData, index) => (
+              <div key={index} className='relative w-full h-40'>
+                <Image
+                  className='rounded-lg object-cover'
+                  src={`${ImageBaseUrl}${imageData.image}`} // Fixed to use `imageData.image`
+                  alt={`sport-image-${index}`}
+                  layout='fill'
+                  objectFit='cover'
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className='text-gray-500 text-sm'>No image available</p>
+        )}
       </div>
     </div>
   );
