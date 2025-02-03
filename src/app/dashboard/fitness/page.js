@@ -1,8 +1,13 @@
+import CommonPageComponent from '@/app/components/CommonPageComponent';
+import MerchnatFitnessList from './fitness-list';
+import SportHeader from '@/app/components/ui/sports/SportHeader';
+
 export default function FitnessPage() {
   return (
-    <div>
-      <h1 className='text-2xl font-bold'>Fitness Management</h1>
-      <p>Manage all sports-related content here.</p>
-    </div>
+    <CommonPageComponent
+      title='Fitness'
+      headerComponent={<SportHeader title='Fitness List' />}
+      bodyComponent={<MerchnatFitnessList />}
+    ></CommonPageComponent>
   );
 }

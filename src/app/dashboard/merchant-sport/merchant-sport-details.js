@@ -141,19 +141,22 @@ export default function MerchantSportDetail() {
             />
           </div>
         </div>
-        <div className='px-5'>
-          <h2 className='text-lg font-semibold '>Equipment List</h2>
+        <div className='pl-2 h-64'>
+          <h2 className='text-lg font-semibold'>Equipment List</h2>
           {equipmentList.length > 0 ? (
-            <div>
+            <div className='h-60 overflow-y-auto pr-2'>
               {equipmentList.map((item, index) => (
-                <div key={index} className='py-2'>
-                  <div className='text-lg font-semibold'> {item.equipment}</div>
+                <div
+                  key={index}
+                  className='mb-2 py-2 px-2 bg-slate-50 rounded-md'
+                >
+                  <div className='text-lg font-semibold'>{item.equipment}</div>
                   <div>{item.description}</div>
                 </div>
               ))}
             </div>
           ) : (
-            <p>No equipment available.</p>
+            <p className='text-gray-50 text-sm'>No equipment available.</p>
           )}
         </div>
       </div>

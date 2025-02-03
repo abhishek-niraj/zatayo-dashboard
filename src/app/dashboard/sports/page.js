@@ -7,7 +7,7 @@ export default function SportsPage() {
       <h1 className='font-semibold py-5'>Sports</h1>
       {/* Table container */}
       <div className='w-full bg-white h-full rounded-[10px] flex flex-col'>
-        <SportHeader />
+        <SportHeader title='Sport List' />
 
         {/* Table Data */}
         <div className='flex-1 overflow-hidden mb-5'>

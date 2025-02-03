@@ -1,9 +1,9 @@
 import { IoIosSearch, IoIosAdd } from 'react-icons/io';
-export default function SportHeader() {
+export default function SportHeader({ title }) {
   return (
     <div className='flex flex-wrap justify-between items-center p-4'>
       <div className='mb-4 md:mb-0'>
-        <h1 className='text-lg md:text-xl'>User List</h1>
+        <h1 className='text-lg md:text-xl'>{title}</h1>
       </div>
       <div className='flex flex-wrap items-center gap-3'>
         <div className='w-full md:w-auto mr-3 h-14 bg-lightGray rounded-[12px] flex items-center'>
