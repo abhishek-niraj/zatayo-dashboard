@@ -49,6 +49,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const menuItems = [
     { name: 'Sports', path: '/dashboard/sports' },
+    { name: 'Qr', path: '/dashboard/qr' },
     { name: 'Fitness', path: '/dashboard/fitness' },
     { name: 'Merchant', path: '/dashboard/merchant' },
     { name: 'Merchant Sport', path: '/dashboard/merchant-sport' },

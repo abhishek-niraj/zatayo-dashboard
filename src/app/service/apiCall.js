@@ -24,6 +24,10 @@ export const apiRequest = async (endpoint, method = 'GET', body = null) => {
 
   const response = await fetch(`${BASE_URL}${endpoint}`, options);
 
+  console.log('--------------');
+  console.log(response);
+  console.log('-----------------');
+
   if (!response.ok) {
     throw new Error(`Failed to fetch data from ${endpoint}`);
   }
