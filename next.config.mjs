@@ -2,13 +2,17 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    // domains: ['192.168.29.91'],
     remotePatterns: [
       {
         protocol: 'http',
         hostname: '192.168.29.91',
         port: '9000',
         pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dashboard.zatayo.com',
+        pathname: '/zatayo-backend/uploads/**', // ✅ Updated to match the actual path
       },
     ],
   },

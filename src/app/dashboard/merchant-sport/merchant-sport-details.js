@@ -169,10 +169,10 @@ export default function MerchantSportDetail() {
               <div key={index} className='relative w-full h-40'>
                 <Image
                   className='rounded-lg object-cover'
-                  src={`${ImageBaseUrl}${imageData.image}`} // Fixed to use `imageData.image`
+                  src={`${ImageBaseUrl}/${imageData.image}`} // Fixed to use `imageData.image`
                   alt={`sport-image-${index}`}
                   layout='fill'
-                  objectFit='cover'
+                  style={{ objectFit: 'cover' }}
                 />
               </div>
             ))}
