@@ -1,12 +1,20 @@
 'use client';
 import { CiEdit } from 'react-icons/ci';
 import { useMerchantFitness } from '../../hook/merchant/fitness/merchantFitness';
+import { useDispatch } from 'react-redux';
 import { RiDeleteBin6Line } from 'react-icons/ri';
-
+import { useRouter } from 'next/navigation';
+import { setSelectedFitness } from '../../../features/merchantSport/merchantFitness';
 export default function MerchnatFitnessList() {
   const { data, isLoading, error } = useMerchantFitness();
+  const router = useRouter();
+  const dispatch = useDispatch();
   if (isLoading) return <p>Loading....</p>;
   if (error) return <p>Error:{error.message}</p>;
+  const handleRowClick = (fitness) => {
+    dispatch(setSelectedFitness(fitness));
+    router.push(`/dashboard/fitness/${fitness.fitnessId}`);
+  };
   return (
     <div className='overflow-y-auto h-full '>
       <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
@@ -43,7 +51,7 @@ export default function MerchnatFitnessList() {
               className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200
                   hover:bg-slate-50 hover:cursor-pointer
                   '
-              //   onClick={() => handleRowClick(sport)} // Navigate to dynamic route
+              onClick={() => handleRowClick(fitness)} // Navigate to dynamic route
             >
               <th
                 scope='row'
