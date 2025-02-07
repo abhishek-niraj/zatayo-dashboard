@@ -5,8 +5,14 @@ import { useDispatch } from 'react-redux';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { useRouter } from 'next/navigation';
 import { setSelectedFitness } from '../../../features/merchantSport/merchantFitness';
+import { useLocationStateList } from '@/app/hook/location/locationApi';
 export default function MerchnatFitnessList() {
   const { data, isLoading, error } = useMerchantFitness();
+  const {
+    data: stateData,
+    isLoading: stateLoading,
+    error: stateError,
+  } = useLocationStateList();
   const router = useRouter();
   const dispatch = useDispatch();
   if (isLoading) return <p>Loading....</p>;

@@ -9,9 +9,21 @@ import Image from 'next/image';
 import DropdownField from '@/app/components/DropDownComponent';
 import { useQrCodeList } from '@/app/hook/admin/qr/qrApi';
 import { useUpdateFitnessDetail } from '@/app/hook/merchant/fitness/merchantFitness';
+import { useQueryClient } from '@tanstack/react-query';
+import { useLocationCityList } from '@/app/hook/location/locationApi';
 export default function FitnessDetails() {
+  const [isoCode, setIsoCode] = useState('');
   const { data, isLoading, error } = useQrCodeList();
-
+  const { data: cityData, refetch } = useLocationCityList({
+    isoCode: isoCode,
+  });
+  useEffect(() => {
+    if (isoCode) {
+      refetch();
+    }
+  }, [isoCode, refetch]);
+  const queryClient = useQueryClient();
+  const stateData = queryClient.getQueryData(['fetchLocationState']);
   const router = useRouter();
   const updateFitnessMutation = useUpdateFitnessDetail();
 
@@ -60,9 +72,17 @@ export default function FitnessDetails() {
       router.replace('/'); // Ensures safe redirection only when necessary
     }
   }, [selectedFitness, router]);
+  useEffect(() => {
+    if (fitnessDetails?.selectedState) {
+      const selectedOption = stateData?.data?.find(
+        (state) => state.name === fitnessDetails.selectedState
+      );
 
-  // Dropdown options for state
-
+      if (selectedOption) {
+        setIsoCode(selectedOption.isoCode);
+      }
+    }
+  }, [fitnessDetails?.selectedState, stateData?.data]);
   // Safe mapping over qrData
   const qrOptions =
     data?.data?.map((item) => ({
@@ -72,6 +92,19 @@ export default function FitnessDetails() {
       disabled:
         item.qrNumber === fitnessDetails.qrNumber ||
         item.isAssigned !== 'Not Assigned',
+    })) || [];
+
+  const stateOptions =
+    stateData?.data?.map((state) => ({
+      value: state.name,
+      label: state.name,
+      isoCode: state.isoCode,
+    })) || [];
+
+  const cityOptions =
+    cityData?.data?.map((state) => ({
+      value: state.name,
+      label: state.name,
     })) || [];
 
   const handleSubmit = async () => {
@@ -144,7 +177,7 @@ export default function FitnessDetails() {
                 })
               }
             />
-            <InputField
+            {/* <InputField
               label='State'
               type='text'
               placeholder='State'
@@ -155,8 +188,24 @@ export default function FitnessDetails() {
                   selectedState: e.target.value,
                 })
               }
+            /> */}
+            <DropdownField
+              label='State'
+              value={fitnessDetails.selectedState}
+              onChange={(e) => {
+                const selectedOption = stateOptions.find(
+                  (option) => option.value === e.target.value
+                );
+                setFitnessDetails({
+                  ...fitnessDetails,
+                  selectedState: e.target.value,
+                });
+                setIsoCode(selectedOption.isoCode);
+                // refetch();
+              }}
+              options={stateOptions}
             />
-            <InputField
+            {/* <InputField
               label='City'
               type='text'
               placeholder='City Name'
@@ -164,6 +213,24 @@ export default function FitnessDetails() {
               onChange={(e) =>
                 setFitnessDetails({ ...fitnessDetails, city: e.target.value })
               }
+            /> */}
+
+            <DropdownField
+              label='City'
+              value={fitnessDetails.city}
+              onChange={(e) => {
+                // const selectedOption = stateOptions.find(
+                //   (option) => option.value === e.target.value
+                // );
+                setFitnessDetails({
+                  ...fitnessDetails,
+                  city: e.target.value,
+                });
+
+                // setIsoCode(selectedOption.isoCode);
+                // refetch();
+              }}
+              options={cityOptions}
             />
             <InputField
               label='Latitude'

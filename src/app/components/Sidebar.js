@@ -43,16 +43,27 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  MdSportsTennis,
+  MdQrCodeScanner,
+  MdFitnessCenter,
+  MdSportsVolleyball,
+} from 'react-icons/md';
+import { LuUserRound } from 'react-icons/lu';
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   const menuItems = [
-    { name: 'Sports', path: '/dashboard/sports' },
-    { name: 'Qr', path: '/dashboard/qr' },
-    { name: 'Fitness', path: '/dashboard/fitness' },
-    { name: 'Merchant', path: '/dashboard/merchant' },
-    { name: 'Merchant Sport', path: '/dashboard/merchant-sport' },
+    { icon: <MdSportsTennis />, name: 'Sports', path: '/dashboard/sports' },
+    { icon: <MdQrCodeScanner />, name: 'Qr', path: '/dashboard/qr' },
+    { icon: <MdFitnessCenter />, name: 'Fitness', path: '/dashboard/fitness' },
+    { icon: <LuUserRound />, name: 'Merchant', path: '/dashboard/merchant' },
+    {
+      icon: <MdSportsVolleyball />,
+      name: 'Merchant Sport',
+      path: '/dashboard/merchant-sport',
+    },
   ];
 
   return (
@@ -84,7 +95,9 @@ export default function Sidebar({ isOpen, onClose }) {
                   }`}
                   onClick={onClose} // Close sidebar on link click
                 >
-                  {item.name}
+                  <div className='flex gap-4 items-center'>
+                    {item.icon} {item.name}
+                  </div>
                 </Link>
               </li>
             ))}

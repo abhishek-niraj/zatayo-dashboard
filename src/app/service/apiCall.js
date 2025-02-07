@@ -24,9 +24,9 @@ export const apiRequest = async (endpoint, method = 'GET', body = null) => {
 
   const response = await fetch(`${BASE_URL}${endpoint}`, options);
 
-  console.log('--------------');
-  console.log(response);
-  console.log('-----------------');
+  // console.log('--------------');
+  // console.log(response);
+  // console.log('-----------------');
 
   if (!response.ok) {
     throw new Error(`Failed to fetch data from ${endpoint}`);
@@ -69,6 +69,29 @@ export const apiCallWithFormData = async (endpoint, body = null) => {
 
   const response = await fetch(`${BASE_URL}${endpoint}`, requestOptions);
 
+  // console.log('--------------');
+  // console.log(response);
+  // console.log('-----------------');
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch data from ${endpoint}`);
+  }
+
+  return response.json(); // Adjust the response handling as per the API response type
+};
+
+export const apiRequestForThirdParty = async (endpoint, method = 'GET') => {
+  const options = {
+    method,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      // Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await fetch(endpoint, options);
+
   console.log('--------------');
   console.log(response);
   console.log('-----------------');
@@ -77,5 +100,5 @@ export const apiCallWithFormData = async (endpoint, body = null) => {
     throw new Error(`Failed to fetch data from ${endpoint}`);
   }
 
-  return response.json(); // Adjust the response handling as per the API response type
+  return response.json();
 };
