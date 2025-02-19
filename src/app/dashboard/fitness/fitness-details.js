@@ -1,16 +1,22 @@
 'use client';
 
 import InputField from '@/app/components/InputField';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { Fragment, useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { ImageBaseUrl } from '@/app/utils/apiUrl';
 import Image from 'next/image';
 import DropdownField from '@/app/components/DropDownComponent';
 import { useQrCodeList } from '@/app/hook/admin/qr/qrApi';
 import { useUpdateFitnessDetail } from '@/app/hook/merchant/fitness/merchantFitness';
+import { useAcceptAndRejectFitnessImage } from '@/app/hook/merchant/fitness/merchantFitness';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocationCityList } from '@/app/hook/location/locationApi';
+import PopUpModel from '@/app/components/PopUpModel';
+import { IoClose } from 'react-icons/io5';
+import { updateImageStatus } from '@/features/merchantSport/merchantFitness';
+import AddMoreImages from './add-more-images';
+
 export default function FitnessDetails() {
   const [isoCode, setIsoCode] = useState('');
   const { data, isLoading, error } = useQrCodeList();
@@ -23,15 +29,32 @@ export default function FitnessDetails() {
     }
   }, [isoCode, refetch]);
   const queryClient = useQueryClient();
+  const dispatch = useDispatch();
   const stateData = queryClient.getQueryData(['fetchLocationState']);
   const router = useRouter();
   const updateFitnessMutation = useUpdateFitnessDetail();
+  const acceptAndRejectFitnessImageMutation = useAcceptAndRejectFitnessImage();
+  const [isShowRejectPopUp, setIsShowRejectPopUp] = useState(false);
+  const [isShowAcceptPopUp, setIsShowAcceptPopUp] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState('');
+  const handelRejectPopUp = (id = '') => {
+    setSelectedImageId(id);
+    setIsShowRejectPopUp(!isShowRejectPopUp);
+  };
+  const handelAcceptPopUp = (id = '') => {
+    setSelectedImageId(id);
+    setIsShowAcceptPopUp(!isShowAcceptPopUp);
+  };
 
+  const handleAddQr = () => {
+    setIsShowPopOfAddQr(!isShowPopOfAddQr);
+  };
   const selectedFitness = useSelector(
     (state) => state.merchantFitness.selectedFitness
   );
 
   const [qrId, setQrId] = useState('');
+
   const [qrData, setQrData] = useState({ data: [] }); // Ensure safe default structure
 
   // Local state for form fields
@@ -72,6 +95,7 @@ export default function FitnessDetails() {
       router.replace('/'); // Ensures safe redirection only when necessary
     }
   }, [selectedFitness, router]);
+  
   useEffect(() => {
     if (fitnessDetails?.selectedState) {
       const selectedOption = stateData?.data?.find(
@@ -143,6 +167,55 @@ export default function FitnessDetails() {
       alert(error);
     }
   };
+  const yesRejectImage = async () => {
+    const response = await handleAcceptAndRejectImage('0');
+    console.log('API Response:', response);
+    if (response.statusCode === 200) {
+      setIsShowRejectPopUp(false);
+      dispatch(
+        updateImageStatus({
+          imagesFitnessId: selectedImageId,
+          newStatus: 'Reject',
+        })
+      );
+      alert(response.message);
+    } else {
+      alert(response.message);
+    }
+  };
+  const yesAcceptImage = async () => {
+    const response = await handleAcceptAndRejectImage('1');
+    console.log('API Response:', response);
+    if (response.statusCode === 200) {
+      setIsShowAcceptPopUp(false);
+      dispatch(
+        updateImageStatus({
+          imagesFitnessId: selectedImageId,
+          newStatus: 'Accepted',
+        })
+      );
+      alert(response.message);
+    } else {
+      alert(response.message);
+    }
+  };
+  const handleAcceptAndRejectImage = async (isReject) => {
+    try {
+      const body = {
+        isReject: isReject,
+        imageId: selectedImageId,
+      };
+      const response = await acceptAndRejectFitnessImageMutation.mutateAsync(
+        body
+      );
+
+      return response;
+    } catch (err) {
+      console.error(error);
+      alert(error);
+    }
+  };
+
   if (isLoading) return <p>Loading ...</p>;
   if (error) return <p>Error:{error.message}</p>;
   if (data.statusCode === 400) {
@@ -317,26 +390,127 @@ export default function FitnessDetails() {
           )}
         </div>
       </div>
-      <div>
-        <h2 className='text-lg font-semibold mb-2'>Images</h2>
-        {selectedFitness?.images?.length > 0 ? (
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-            {selectedFitness.images.map((imageData, index) => (
-              <div key={index} className='relative w-full h-40'>
-                <Image
-                  className='rounded-lg object-cover'
-                  src={`${ImageBaseUrl}/${imageData.image}`} // Fixed to use `imageData.image`
-                  alt={`sport-image-${index}`}
-                  layout='fill'
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-            ))}
+      <Fragment>
+        <div>
+          <div className='flex gap-2'>
+            <h2 className='text-lg font-semibold mb-2'>Images</h2>
+            <AddMoreImages fitnessSportsId={fitnessDetails.id} />
           </div>
+          {selectedFitness?.images?.length > 0 ? (
+            <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+              {selectedFitness.images.map((imageData, index) => (
+                <div key={imageData.imagesFitnessId} className=' '>
+                  <div className='max-w-sm rounded overflow-hidden shadow-lg'>
+                    {/* Image Section */}
+                    <div className='relative w-full h-48'>
+                      <Image
+                        src={`${ImageBaseUrl}/${imageData.image}`}
+                        alt={`sport-image-${index}`}
+                        layout='fill'
+                        style={{ objectFit: 'cover' }}
+                        className='rounded-t-md'
+                      />
+                    </div>
+
+                    {/* Tags Section */}
+                    <div className='px-6 pt-4 pb-2'>
+                      <div className='flex justify-between'>
+                        <div
+                          onClick={() =>
+                            handelAcceptPopUp(imageData.imagesFitnessId)
+                          }
+                          className='cursor-pointer inline-block bg-green-500 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2'
+                        >
+                          Accept
+                        </div>
+                        <div
+                          onClick={() =>
+                            handelRejectPopUp(imageData.imagesFitnessId)
+                          }
+                          className=' cursor-pointer inline-block bg-red-600 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2'
+                        >
+                          Reject
+                        </div>
+                      </div>
+                      <div className='flex justify-between'>
+                        <span className='inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2'>
+                          {imageData.imageStatus}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className='text-gray-500 text-sm'>No image available</p>
+          )}
+        </div>
+        {isShowRejectPopUp ? (
+          <PopUpModel>
+            <div className='px-2'>
+              <div className='flex justify-between'>
+                <p>Warning</p>
+                <div className=' cursor-pointer bg-slate-300 rounded-[100px] h-6 w-6 flex items-center justify-center'>
+                  <IoClose onClick={handelRejectPopUp} size={16} />
+                </div>
+              </div>
+              <p>Are you want to reject the image?</p>
+              <div className='flex  justify-end mt-5'>
+                <div className='flex space-x-3'>
+                  <button
+                    onClick={yesRejectImage}
+                    className='bg-blueButton px-3 py-1 rounded-md text-white'
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={handelRejectPopUp}
+                    className='bg-slate-300 px-3 py-1 rounded-md'
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </PopUpModel>
         ) : (
-          <p className='text-gray-500 text-sm'>No image available</p>
+          <></>
         )}
-      </div>
+
+        {isShowAcceptPopUp ? (
+          <PopUpModel>
+            <div className='px-2'>
+              <div className='flex justify-between'>
+                <p>Warning</p>
+                <div className=' cursor-pointer bg-slate-300 rounded-[100px] h-6 w-6 flex items-center justify-center'>
+                  <IoClose onClick={handelAcceptPopUp} size={16} />
+                </div>
+              </div>
+              <p>Are you want to Accept this image?</p>
+              <div className='flex  justify-end mt-5'>
+                <div className='flex space-x-3'>
+                  <button
+                    onClick={yesAcceptImage}
+                    className='bg-blueButton px-3 py-1 rounded-md text-white'
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={handelAcceptPopUp}
+                    className='bg-slate-300 px-3 py-1 rounded-md'
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </PopUpModel>
+        ) : (
+          <></>
+        )}
+      </Fragment>
+
       <div className='flex'>
         <button
           onClick={() => {

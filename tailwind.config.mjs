@@ -13,6 +13,7 @@ export default {
         foreground: 'var(--foreground)',
         lightGray: '#F5F6FA',
         blueButton: '#4880FF',
+        cancelButtonColor: '#D1D5DB',
       },
       height: {
         'calc-screen': 'calc(100vh - 56px)',

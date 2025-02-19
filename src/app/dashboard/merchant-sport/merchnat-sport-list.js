@@ -5,12 +5,19 @@ import { CiEdit } from 'react-icons/ci';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { useRouter } from 'next/navigation';
 import { setSelectedSport } from '../../../features/merchantSport/merchnatSportSlice';
+import { useLocationStateList } from '@/app/hook/location/locationApi';
 export default function MerchantSportList() {
   const { data, isLoading, error } = useMerchantSports();
+  const {
+    data: stateData,
+    isLoading: stateLoading,
+    error: stateError,
+  } = useLocationStateList();
   const dispatch = useDispatch();
   const router = useRouter();
   if (isLoading) return <p>Loading ....</p>;
   if (error) return <p>Error: {error.message}</p>;
+
   const handleRowClick = (sport) => {
     dispatch(setSelectedSport(sport));
     router.push(`/dashboard/merchant-sport/${sport.sportId}`);
