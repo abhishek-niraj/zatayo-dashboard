@@ -1,5 +1,6 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { apiCallWithFormData } from '@/app/service/apiCall';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const fetchMerchantSport = async () => {
@@ -28,9 +29,33 @@ const fetchMerchantSport = async () => {
   }
 };
 
+const updateMerchantSport = async (body) => {
+  const response = await apiCallWithFormData(
+    '/merchant-sports/admin/update-merchant-sport',
+    body
+  );
+  if (response.statusCode !== 200) {
+    throw new Error(response.message);
+  }
+  return response;
+};
+
 export const useMerchantSports = () => {
   return useQuery({
     queryKey: ['merchantSports'],
     queryFn: fetchMerchantSport,
+  });
+};
+
+export const useUpdateMerchantSportDetails = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateMerchantSport,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['merchantSports']);
+    },
+    onError: (error) => {
+      console.error('Api error for merchant sport', error);
+    },
   });
 };

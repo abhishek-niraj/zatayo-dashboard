@@ -34,9 +34,6 @@ const acceptAndRejectImageApi = async (body) => {
 };
 
 const addFitnessImages = async ({ fitnessSportsId, file }) => {
-  console.log('0000000000000000000000000');
-  console.log(fitnessSportsId, file);
-  console.log('00000000000000000000000000');
 
   const response = await apiRequestFoUploadFiles(
     '/fitness/admin/add-fitness-image',

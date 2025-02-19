@@ -13,6 +13,7 @@ import {
   useAcceptAndRejectFitnessImage,
   useUpdateFitnessDetail,
 } from '@/app/hook/merchant/fitness/merchantFitness';
+import { useUpdateMerchantSportDetails } from '@/app/hook/merchant/sport/merchantSport';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocationCityList } from '@/app/hook/location/locationApi';
 import AddMoreImages from '../fitness/add-more-images';
@@ -39,11 +40,12 @@ export default function MerchantSportDetail() {
   const dispatch = useDispatch();
   const stateData = queryClient.getQueryData(['fetchLocationState']);
   const updateFitnessMutation = useUpdateFitnessDetail();
+  const updateMerchantSportDetails = useUpdateMerchantSportDetails();
   const acceptAndRejectFitnessImageMutation = useAcceptAndRejectFitnessImage();
   const [isShowRejectPopUp, setIsShowRejectPopUp] = useState(false);
   const [isShowAcceptPopUp, setIsShowAcceptPopUp] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState('');
-
+  const [qrId, setQrId] = useState('');
   // Local state for form fields
   const [sportName, setSportName] = useState('');
   const [locationName, setLocationName] = useState('');
@@ -56,6 +58,7 @@ export default function MerchantSportDetail() {
   const [qrCode, setQrCode] = useState('');
   const [equipmentList, setEquipmentList] = useState([]);
   const [sportId, setSportId] = useState('');
+  const [fitnessSportId, setFitnessSportId] = useState('');
 
   const handelRejectPopUp = (id = '') => {
     setSelectedImageId(id);
@@ -77,7 +80,9 @@ export default function MerchantSportDetail() {
       setLongitude(selectedSport.longitude || '');
       setSportType(selectedSport.sportType || '');
       setEquipmentList(selectedSport.equipmentData || []); // Corrected here
-      setSportId(selectedSport.newSportId || '');
+      setSportId(selectedSport.sportId || '');
+      setFitnessSportId(selectedSport.fitnessSportId || '');
+      setQrCode(selectedSport.qrNumber || '');
     }
   }, [selectedSport]);
 
@@ -118,90 +123,43 @@ export default function MerchantSportDetail() {
       label: state.name,
     })) || [];
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const body = {
-  //       description: fitnessDetails.description,
-  //       latitude: fitnessDetails.latitude,
-  //       longitude: fitnessDetails.longitude,
-  //       name: fitnessDetails.fitnessName,
-  //       locationName: fitnessDetails.locationName,
-  //       state: fitnessDetails.selectedState,
-  //       city: fitnessDetails.city,
-  //       qrId: qrId,
-  //       id: fitnessDetails.id,
-  //       // bannerImages: document.getElementById('fileInput').files, // Assuming file input element is present in the DOM
-  //       // equipments: JSON.stringify([
-  //       //   {
-  //       //     equipment: 'Infrared Saunas and Steam Rooms',
-  //       //     description:
-  //       //       'Purpose: Detoxification and relaxation post-workout',
-  //       //   },
-  //       //   {
-  //       //     equipment: 'HydroMassage Beds',
-  //       //     description: 'Adjustable water pressure.',
-  //       //   },
-  //       //   {
-  //       //     equipment: 'Stretching Machines',
-  //       //     description: 'Guided stretching positions.',
-  //       //   },
-  //       // ]),
-  //     };
-  //     await updateFitnessMutation.mutateAsync(body);
-  //     alert('Fitness detail updates successfully ');
-  //   } catch (error) {
-  //     console.log(error);
-  //     alert(error);
-  //   }
-  // };
-  // const yesRejectImage = async () => {
-  //   const response = await handleAcceptAndRejectImage('0');
-  //   console.log('API Response:', response);
-  //   if (response.statusCode === 200) {
-  //     setIsShowRejectPopUp(false);
-  //     dispatch(
-  //       updateImageStatus({
-  //         imagesFitnessId: selectedImageId,
-  //         newStatus: 'Reject',
-  //       })
-  //     );
-  //     alert(response.message);
-  //   } else {
-  //     alert(response.message);
-  //   }
-  // };
-  // const yesAcceptImage = async () => {
-  //   const response = await handleAcceptAndRejectImage('1');
-  //   console.log('API Response:', response);
-  //   if (response.statusCode === 200) {
-  //     setIsShowAcceptPopUp(false);
-  //     dispatch(
-  //       updateImageStatus({
-  //         imagesFitnessId: selectedImageId,
-  //         newStatus: 'Accepted',
-  //       })
-  //     );
-  //     alert(response.message);
-  //   } else {
-  //     alert(response.message);
-  //   }
-  // };
-  // const handleAcceptAndRejectImage = async (isReject) => {
-  //   try {
-  //     const body = {
-  //       isReject: isReject,
-  //       imageId: selectedImageId,
-  //     };
-  //     const response = await acceptAndRejectFitnessImageMu.mutateAsync(
-  //       body
-  //     );
-
-  //     return response;
-  //   } catch (err) {
-  //     console.error(error);
-  //     alert(error);
-  //   }
-  // };
+  const handleSubmit = async () => {
+    try {
+      const body = {
+        description: description,
+        latitude: latitude,
+        longitude: longitude,
+        name: sportName,
+        locationName: locationName,
+        state: selectedState,
+        city: city,
+        sportId: sportId,
+        qrId: qrId,
+        // id: fitnessDetails.id,
+        // bannerImages: document.getElementById('fileInput').files, // Assuming file input element is present in the DOM
+        // equipments: JSON.stringify([
+        //   {
+        //     equipment: 'Infrared Saunas and Steam Rooms',
+        //     description:
+        //       'Purpose: Detoxification and relaxation post-workout',
+        //   },
+        //   {
+        //     equipment: 'HydroMassage Beds',
+        //     description: 'Adjustable water pressure.',
+        //   },
+        //   {
+        //     equipment: 'Stretching Machines',
+        //     description: 'Guided stretching positions.',
+        //   },
+        // ]),
+      };
+      await updateMerchantSportDetails.mutateAsync(body);
+      alert('sport detail updates successfully ');
+    } catch (error) {
+      console.log(error);
+      alert(error);
+    }
+  };
 
   const handleAcceptAndRejectImage = async (isReject) => {
     try {
@@ -346,13 +304,9 @@ export default function MerchantSportDetail() {
                 const selectedOption = qrOptions.find(
                   (option) => option.value === e.target.value
                 );
+                setQrCode(e.target.value);
 
-                // setFitnessDetails({
-                //   ...fitnessDetails,
-                //   qrNumber: e.target.value,
-                // });
-
-                setQrCode(selectedOption.qrId);
+                setQrId(selectedOption.qrId);
               }}
               options={qrOptions}
             />
@@ -391,7 +345,7 @@ export default function MerchantSportDetail() {
         <div>
           <div className='flex gap-2'>
             <h2 className='text-lg font-semibold mb-2'>Images</h2>
-            <AddMoreImages fitnessSportsId={sportId} />
+            <AddMoreImages fitnessSportsId={fitnessSportId} />
           </div>
           {selectedSport?.images?.length > 0 ? (
             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
@@ -507,6 +461,17 @@ export default function MerchantSportDetail() {
           <></>
         )}
       </Fragment>
+
+      <div className='flex'>
+        <button
+          onClick={() => {
+            handleSubmit();
+          }}
+          className=' ml-auto bg-blueButton text-white px-4 py-2 rounded-[5px]'
+        >
+          Update
+        </button>
+      </div>
     </div>
   );
 }
