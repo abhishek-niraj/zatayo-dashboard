@@ -135,6 +135,7 @@ export default function MerchantSportDetail() {
         city: city,
         sportId: sportId,
         qrId: qrId,
+        fitnessSportId: fitnessSportId,
         // id: fitnessDetails.id,
         // bannerImages: document.getElementById('fileInput').files, // Assuming file input element is present in the DOM
         // equipments: JSON.stringify([
